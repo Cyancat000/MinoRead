@@ -1,3 +1,8 @@
+/**
+ * mockDataRaw
+ * 原始数据池：包含书籍、作者、系列、书架、历史、分类等
+ * 后续会基于此生成：评论、排行榜、用户信息
+ */
 const mockDataRaw = {
   books: [
     { id: 101, title: '姑获鸟之夏', authorId: 101, seriesId: null, date: "2010-10-10", length: "502314", award: [], dbRating: 7.9 },
@@ -62,16 +67,23 @@ const mockDataRaw = {
     { name: "生活百科", id: 109}, 
     { name: "励志成长", id: 110}, 
   ],
-  // mockData里使用dbRating评分排行
+  // 排行榜数据容器（在 ensureRawGenerated 中填充）
   rakingList: [],
-  // 生成一些评论然后在mockData里随机放入每个书籍评论区
+  // 评论容器（在 ensureRawGenerated 中生成并分配至各书籍）
   commentList: [],
-  // 生成一个用户信息
+  // 用户信息（在 ensureRawGenerated 中生成）
   userInfo: {
     
   }
 };
 
+/**
+ * 工具函数
+ * - randInt：整型随机数
+ * - pickOne：从列表中取一个
+ * - shuffle：洗牌
+ * - safeClone：深克隆（用于返回数据时的隔离）
+ */
 const randInt = (min, max) => {
   const nMin = Number(min)
   const nMax = Number(max)
@@ -96,6 +108,13 @@ const shuffle = (list) => {
 
 const safeClone = (value) => JSON.parse(JSON.stringify(value))
 
+/**
+ * ensureRawGenerated
+ * 根据原始书籍列表生成：
+ *  - userInfo（阅读统计等）
+ *  - commentList（每本书随机数量的评论）
+ *  - rakingList（热门/完结/潜力三类）
+ */
 const ensureRawGenerated = () => {
   if (mockDataRaw.userInfo && mockDataRaw.userInfo.id) return
 
@@ -189,7 +208,8 @@ const ensureRawGenerated = () => {
 ensureRawGenerated()
 
 /**
- * @desc 定义处理/映射后mockDataRow
+ * mockData
+ * 将 raw 数据处理为可直接用于前端渲染的结构
  */
 const mockData = {
   meta: {
@@ -197,6 +217,12 @@ const mockData = {
   },
 }
 
+/**
+ * buildMockData
+ * 完成字段映射与聚合：
+ *  - 为书籍补充 authorName / seriesName / cover / desc 等
+ *  - 生成书架、历史、分类、排行榜、按书籍聚合的评论
+ */
 const buildMockData = () => {
   const authorById = new Map(mockDataRaw.authorList.map((a) => [a.id, a]))
   const seriesById = new Map(mockDataRaw.seriesList.map((s) => [s.id, s]))
@@ -211,7 +237,7 @@ const buildMockData = () => {
   const books = mockDataRaw.books.map((b) => {
     const author = authorById.get(b.authorId) ?? null
     const series = b.seriesId ? seriesById.get(b.seriesId) ?? null : null
-    return {
+    const mapped = {
       id: b.id,
       title: b.title,
       authorId: b.authorId,
@@ -223,8 +249,10 @@ const buildMockData = () => {
       award: b.award ?? [],
       dbRating: Number(b.dbRating),
       desc: mockDataRaw.desc.trim(),
-      cover: `/mock/images/cover/${b.id}.jpg`,
+      // 使用相对路径以兼容打包后 file:// 双击打开
+      cover: `mock/images/cover/${b.id}.jpg`,
     }
+    return mapped
   })
 
   const bookById = new Map(books.map((b) => [b.id, b]))
@@ -288,6 +316,15 @@ buildMockData()
 
 export { mockDataRaw, mockData }
 
+/**
+ * resolveByPath
+ * 通过 path 解析并返回 mockData 中的子数据
+ * 支持：
+ *  - /books, /books/:id
+ *  - /bookshelf, /history, /categories, /rankings, /user
+ *  - /comments/:bookId
+ *  - 任意对象链路径，如：/meta
+ */
 const resolveByPath = (path) => {
   const normalized = String(path ?? '').trim()
   if (!normalized || normalized === '/') return mockData

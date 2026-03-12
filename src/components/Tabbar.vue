@@ -29,7 +29,7 @@ const activeKey = computed(() => {
         v-for="tab in tabs"
         :key="tab.key"
         :to="tab.to"
-        class="flex h-14 flex-col items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
+        class="flex h-14 flex-col items-center justify-center gap-1 text-muted-foreground transition-colors active:bg-muted/50 active:text-foreground"
         :class="activeKey === tab.key ? 'text-foreground' : ''"
       >
         <component :is="tab.icon" class="h-5 w-5" />
