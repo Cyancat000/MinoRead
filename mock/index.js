@@ -134,12 +134,16 @@ const ensureRawGenerated = () => {
   mockDataRaw.userInfo = {
     id: 1,
     name: 'Mino',
-    avatar: '',
+    avatar: 'mock/images/avatar.svg',
     level: 12,
+    bio: '保持阅读，保持好奇。',
     stats: {
       yesterdayMinutes: randInt(0, 120),
       totalMinutes: randInt(300, 12000),
       streakDays: randInt(0, 30),
+      bookshelfCount: mockDataRaw.bookshelfList.length,
+      historyCount: mockDataRaw.historyList.length,
+      favoriteCount: randInt(0, 120),
     },
   }
 
