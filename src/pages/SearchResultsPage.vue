@@ -23,6 +23,7 @@ const error = ref('')
 const list = ref<Book[]>([])
 
 const q = computed(() => String(route.query.q ?? '').trim())
+const from = computed(() => String(route.query.from ?? '').trim())
 
 const mainEl = ref<HTMLElement | null>(null)
 const pageSize = 10
@@ -72,7 +73,12 @@ const load = async () => {
 }
 
 const goBack = () => {
-  router.back()
+  const raw = from.value
+  if (raw.startsWith('/')) {
+    router.replace(raw)
+    return
+  }
+  router.replace('/')
 }
 
 watch(

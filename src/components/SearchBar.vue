@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Search } from 'lucide-vue-next'
 
+const route = useRoute()
 const router = useRouter()
 const kw = ref('')
 
 const onSubmit = () => {
   const q = kw.value.trim()
   if (!q) return
-  router.push({ path: '/search', query: { q } })
+  router.push({ path: '/search', query: { q, from: route.fullPath } })
 }
 </script>
 

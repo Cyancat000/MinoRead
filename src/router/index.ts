@@ -34,8 +34,16 @@ const router = createRouter({
       component: () => import('@/pages/RankingsPage.vue'),
     },
     { path: '/book/:id', name: 'book-detail', component: () => import('@/pages/BookDetailPage.vue') },
-    { path: '/toc/:id', name: 'toc', component: () => import('@/pages/TocPage.vue') },
-    { path: '/comments/:id', name: 'comments', component: () => import('@/pages/CommentsPage.vue') },
+    {
+      path: '/toc/:id',
+      name: 'toc',
+      redirect: (to) => ({ path: `/book/${String(to.params.id ?? '')}`, query: { tab: 'toc' } }),
+    },
+    {
+      path: '/comments/:id',
+      name: 'comments',
+      redirect: (to) => ({ path: `/book/${String(to.params.id ?? '')}`, query: { tab: 'comments' } }),
+    },
     { path: '/reader/:id/:chapter?', name: 'reader', component: () => import('@/pages/ReaderPage.vue') },
     { path: '/404', name: 'not-found', component: () => import('@/pages/NotFoundPage.vue') },
     {

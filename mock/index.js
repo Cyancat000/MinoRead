@@ -174,7 +174,7 @@ const ensureRawGenerated = () => {
         bookId: book.id,
         userId: u.id,
         userName: u.name,
-        userAvatar: '',
+        userAvatar: `https://picsum.photos/seed/user-${u.id}/64/64`,
         content: pickOne(commentTemplates),
         likeCount: randInt(0, 320),
         liked: false,
@@ -221,6 +221,30 @@ const mockData = {
   },
 }
 
+const chapterTitlePool = [
+  '雨夜来客',
+  '不速之约',
+  '旧书店的灯',
+  '消失的房间',
+  '暗处的回声',
+  '纸上的名字',
+  '街角的风',
+  '线索与误差',
+  '沉默的证言',
+  '与影子同行',
+  '落在窗台的雪',
+  '真相的边缘',
+]
+
+const chapterContentPool = [
+  '屋里安静得只剩下钟表的滴答声，像是在提醒你时间并不会因为犹豫而停下。',
+  '他把话说得很轻，却像一枚钉子钉进木头里，让人无法忽视。',
+  '雨水顺着屋檐落下，打碎在台阶上，溅起一阵细小的白雾。',
+  '你以为看到的是答案，其实只是另一层遮掩。',
+  '灯光一晃，纸页上的字仿佛也跟着动了起来。',
+  '每个人都在叙述同一件事，却像在讲述不同的世界。',
+]
+
 /**
  * buildMockData
  * 完成字段映射与聚合：
@@ -241,6 +265,12 @@ const buildMockData = () => {
   const books = mockDataRaw.books.map((b) => {
     const author = authorById.get(b.authorId) ?? null
     const series = b.seriesId ? seriesById.get(b.seriesId) ?? null : null
+    const chapterCount = randInt(12, 30)
+    const chapters = Array.from({ length: chapterCount }, (_, idx) => ({
+      id: idx + 1,
+      title: `第${idx + 1}章 ${pickOne(chapterTitlePool)}`,
+      content: pickOne(chapterContentPool),
+    }))
     const mapped = {
       id: b.id,
       title: b.title,
@@ -255,6 +285,7 @@ const buildMockData = () => {
       desc: mockDataRaw.desc.trim(),
       // 使用相对路径以兼容打包后 file:// 双击打开
       cover: `mock/images/cover/${b.id}.jpg`,
+      chapters,
     }
     return mapped
   })
