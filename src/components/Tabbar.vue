@@ -6,7 +6,7 @@ import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const tabs = [
-  { key: 'bookshelf', label: '书架', to: '/bookshelf', icon: BookOpen },
+  { key: 'bookshelf', label: '书架', to: '/', icon: BookOpen },
   { key: 'rankings', label: '排行', to: '/rankings', icon: Trophy },
   { key: 'categories', label: '分类', to: '/categories', icon: LayoutGrid },
   { key: 'profile', label: '我的', to: '/profile', icon: User },

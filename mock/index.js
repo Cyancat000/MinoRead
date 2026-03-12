@@ -113,7 +113,7 @@ const safeClone = (value) => JSON.parse(JSON.stringify(value))
  * 根据原始书籍列表生成：
  *  - userInfo（阅读统计等）
  *  - commentList（每本书随机数量的评论）
- *  - rakingList（热门/完结/潜力三类）
+ *  - rakingList（热门/高分/畅销三类）
  */
 const ensureRawGenerated = () => {
   if (mockDataRaw.userInfo && mockDataRaw.userInfo.id) return
@@ -256,6 +256,7 @@ const buildMockData = () => {
   })
 
   const bookById = new Map(books.map((b) => [b.id, b]))
+  let nextVirtualBookId = Math.max(0, ...books.map((b) => Number(b.id) || 0)) + 1
 
   const bookshelf = mockDataRaw.bookshelfList
     .map((x) => bookById.get(x.id))
@@ -267,8 +268,19 @@ const buildMockData = () => {
 
   const allIds = books.map((b) => b.id)
   const categories = mockDataRaw.catelogList.map((c) => {
-    const picked = shuffle(allIds).slice(0, 6).map((id) => bookById.get(id)).filter(Boolean)
-    return { id: c.id, name: c.name, books: picked }
+    const desiredCount = randInt(15, 100)
+    const picked = shuffle(allIds)
+      .slice(0, Math.min(allIds.length, desiredCount))
+      .map((id) => bookById.get(id))
+      .filter(Boolean)
+
+    const list = picked.slice()
+    while (list.length < desiredCount && list.length > 0) {
+      const src = list[list.length % picked.length]
+      list.push({ ...src, id: nextVirtualBookId++ })
+    }
+
+    return { id: c.id, name: c.name, books: list }
   })
 
   const rankings = {
@@ -330,7 +342,9 @@ const resolveByPath = (path) => {
   if (!normalized || normalized === '/') return mockData
 
   const clean = normalized.startsWith('/') ? normalized : `/${normalized}`
-  const parts = clean.split('/').filter(Boolean)
+  const [pathname, queryString] = clean.split('?')
+  const query = Object.fromEntries(new URLSearchParams(queryString ?? ''))
+  const parts = String(pathname ?? '').split('/').filter(Boolean)
 
   if (parts[0] === 'books') {
     if (parts.length === 1) return mockData.books
@@ -340,9 +354,22 @@ const resolveByPath = (path) => {
 
   if (parts[0] === 'bookshelf') return mockData.bookshelf
   if (parts[0] === 'history') return mockData.history
-  if (parts[0] === 'categories') return mockData.categories
+  if (parts[0] === 'categories') {
+    if (parts.length === 1) return mockData.categories
+    const id = Number(parts[1])
+    return mockData.categories.find((c) => c.id === id) ?? null
+  }
   if (parts[0] === 'rankings') return mockData.rankings
   if (parts[0] === 'user') return mockData.user
+  if (parts[0] === 'search') {
+    const q = String(query.q ?? '').trim().toLowerCase()
+    if (!q) return []
+    return mockData.books.filter((b) => {
+      const title = String(b.title ?? '').toLowerCase()
+      const authorName = String(b.authorName ?? '').toLowerCase()
+      return title.includes(q) || authorName.includes(q)
+    })
+  }
 
   if (parts[0] === 'comments') {
     const id = Number(parts[1])

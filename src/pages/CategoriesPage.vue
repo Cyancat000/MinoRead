@@ -1,6 +1,31 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { Home } from 'lucide-vue-next'
 import SearchBar from '@/components/SearchBar.vue'
+import { getMockData } from '@/lib/mock'
+
+type Category = {
+  id: number
+  name: string
+  books: { id: number }[]
+}
+
+const loading = ref(false)
+const error = ref('')
+const categories = ref<Category[]>([])
+
+onMounted(async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const res = await getMockData('/categories', 80, true)
+    categories.value = Array.isArray(res?.data) ? (res.data as Category[]) : []
+  } catch (_e) {
+    error.value = '加载失败'
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>
@@ -23,10 +48,18 @@ import SearchBar from '@/components/SearchBar.vue'
 
     <main class="min-h-0 flex-1 overflow-auto p-4">
       <SearchBar class="mb-3" />
-      <div class="grid gap-2">
-        <div class="rounded-lg border border-border p-3 text-sm text-muted-foreground">
-          这里展示分类内容（占位示例）。
-        </div>
+      <div v-if="loading" class="text-sm text-muted-foreground">加载中...</div>
+      <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
+      <div v-else class="grid gap-2">
+        <RouterLink
+          v-for="c in categories"
+          :key="c.id"
+          :to="`/categories/${c.id}`"
+          class="flex items-center justify-between rounded-lg border border-border bg-background p-3 transition-transform active:scale-[0.98]"
+        >
+          <div class="text-sm font-medium text-foreground">{{ c.name }}</div>
+          <div class="text-xs text-muted-foreground">{{ (c.books?.length ?? 0) }} 本</div>
+        </RouterLink>
       </div>
     </main>
   </div>

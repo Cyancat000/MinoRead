@@ -3,12 +3,24 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', name: 'home', component: () => import('@/pages/HomePage.vue') },
+    {
+      path: '/',
+      name: 'bookshelf',
+      meta: { showTabbar: true },
+      component: () => import('@/pages/BookshelfPage.vue'),
+    },
+    { path: '/bookshelf', redirect: '/' },
     {
       path: '/categories',
       name: 'categories',
       meta: { showTabbar: true },
       component: () => import('@/pages/CategoriesPage.vue'),
+    },
+    {
+      path: '/categories/:id',
+      name: 'category-list',
+      meta: { showTabbar: true },
+      component: () => import('@/pages/CategoryListPage.vue'),
     },
     {
       path: '/search',
@@ -21,16 +33,11 @@ const router = createRouter({
       meta: { showTabbar: true },
       component: () => import('@/pages/RankingsPage.vue'),
     },
-    {
-      path: '/bookshelf',
-      name: 'bookshelf',
-      meta: { showTabbar: true },
-      component: () => import('@/pages/BookshelfPage.vue'),
-    },
     { path: '/book/:id', name: 'book-detail', component: () => import('@/pages/BookDetailPage.vue') },
     { path: '/toc/:id', name: 'toc', component: () => import('@/pages/TocPage.vue') },
     { path: '/comments/:id', name: 'comments', component: () => import('@/pages/CommentsPage.vue') },
     { path: '/reader/:id/:chapter?', name: 'reader', component: () => import('@/pages/ReaderPage.vue') },
+    { path: '/404', name: 'not-found', component: () => import('@/pages/NotFoundPage.vue') },
     {
       path: '/profile',
       name: 'profile',
@@ -39,7 +46,7 @@ const router = createRouter({
     },
     { path: '/history', name: 'history', component: () => import('@/pages/HistoryPage.vue') },
     { path: '/template', name: 'template', component: () => import('@/pages/TemplatePage.vue') },
-    { path: '/:pathMatch(.*)*', redirect: '/' },
+    { path: '/:pathMatch(.*)*', redirect: '/404' },
   ],
 })
 

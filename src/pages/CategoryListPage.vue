@@ -15,21 +15,29 @@ type Book = {
   length?: number
 }
 
+type Category = {
+  id: number
+  name: string
+  books: Book[]
+}
+
 const route = useRoute()
 const router = useRouter()
 
 const loading = ref(false)
 const error = ref('')
-const list = ref<Book[]>([])
-
-const q = computed(() => String(route.query.q ?? '').trim())
+const category = ref<Category | null>(null)
 
 const mainEl = ref<HTMLElement | null>(null)
 const pageSize = 10
 const visibleCount = ref(pageSize)
 const loadingMore = ref(false)
-const total = computed(() => list.value.length)
-const visibleList = computed(() => list.value.slice(0, visibleCount.value))
+
+const total = computed(() => category.value?.books?.length ?? 0)
+const visibleBooks = computed(() => {
+  const list = category.value?.books ?? []
+  return list.slice(0, visibleCount.value)
+})
 
 const loadMore = async () => {
   if (loadingMore.value) return
@@ -48,35 +56,31 @@ const onScroll = async () => {
 }
 
 const load = async () => {
-  if (!q.value) {
-    list.value = []
-    visibleCount.value = pageSize
-    loadingMore.value = false
-    return
-  }
+  const id = String(route.params.id ?? '')
+  if (!id) return
 
   loading.value = true
   error.value = ''
   try {
-    const res = await getMockData(`/search?q=${encodeURIComponent(q.value)}`, 80, true)
-    list.value = Array.isArray(res?.data) ? (res.data as Book[]) : []
+    const res = await getMockData(`/categories/${encodeURIComponent(id)}`, 80, true)
+    category.value = (res?.data as Category) ?? null
     visibleCount.value = pageSize
     loadingMore.value = false
     if (mainEl.value) mainEl.value.scrollTop = 0
   } catch (_e) {
     error.value = '加载失败'
-    list.value = []
+    category.value = null
   } finally {
     loading.value = false
   }
 }
 
 const goBack = () => {
-  router.back()
+  router.push('/categories')
 }
 
 watch(
-  () => route.query.q,
+  () => route.params.id,
   async () => {
     await load()
   }
@@ -101,28 +105,25 @@ onMounted(load)
           >
             <ArrowLeft class="h-5 w-5" />
           </button>
-          <h1 class="text-lg font-semibold tracking-tight">搜索结果</h1>
+          <h1 class="text-lg font-semibold tracking-tight">{{ category?.name ?? '分类' }}</h1>
         </div>
       </div>
     </header>
 
     <main ref="mainEl" class="min-h-0 flex-1 overflow-auto p-4" @scroll="onScroll">
-      <div v-if="!q" class="text-sm text-muted-foreground">请输入关键词进行搜索。</div>
-      <div v-else-if="loading" class="text-sm text-muted-foreground">加载中...</div>
+      <div v-if="loading" class="text-sm text-muted-foreground">加载中...</div>
       <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
       <div v-else class="grid gap-2">
-        <div class="text-xs text-muted-foreground">关键词：{{ q }}（{{ total }} 条）</div>
-        <BookListItem v-for="b in visibleList" :key="b.id" :book="b" />
+        <BookListItem v-for="b in visibleBooks" :key="b.id" :book="b" />
 
-        <div v-if="total === 0" class="py-2 text-center text-xs text-muted-foreground">没有结果</div>
-        <div v-else-if="loadingMore" class="flex items-center justify-center gap-2 py-3">
+        <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3">
           <div
             class="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground"
           />
           <div class="text-xs text-muted-foreground">加载中...</div>
         </div>
         <div
-          v-else-if="visibleCount >= total"
+          v-else-if="total > 0 && visibleCount >= total"
           class="py-2 text-center text-xs text-muted-foreground"
         >
           已经没有更多了~
