@@ -8,7 +8,7 @@ const route = useRoute()
 const tabs = [
   { key: 'bookshelf', label: '书架', to: '/bookshelf', icon: BookOpen },
   { key: 'rankings', label: '排行', to: '/rankings', icon: Trophy },
-  { key: 'search', label: '分类', to: '/search', icon: LayoutGrid },
+  { key: 'categories', label: '分类', to: '/categories', icon: LayoutGrid },
   { key: 'profile', label: '我的', to: '/profile', icon: User },
 ]
 
@@ -16,7 +16,7 @@ const activeKey = computed(() => {
   const name = String(route.name ?? '')
   if (name === 'bookshelf') return 'bookshelf'
   if (name === 'rankings') return 'rankings'
-  if (name === 'search') return 'search'
+  if (name === 'categories') return 'categories'
   if (name === 'profile') return 'profile'
   return ''
 })

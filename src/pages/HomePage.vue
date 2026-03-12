@@ -17,10 +17,10 @@
     <main class="min-h-0 flex-1 overflow-auto p-4">
       <div class="grid gap-2">
       <RouterLink
-        to="/search"
+        to="/categories"
         class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors transition-transform active:scale-[0.98] active:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        去搜索与分类
+        去分类
       </RouterLink>
       <RouterLink
         to="/rankings"

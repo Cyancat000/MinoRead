@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { ArrowLeft } from 'lucide-vue-next'
+</script>
+
 <template>
   <div class="flex h-full w-full flex-col">
     <header
@@ -7,9 +11,11 @@
         <h1 class="text-lg font-semibold tracking-tight">浏览历史</h1>
         <RouterLink
           to="/profile"
-          class="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium transition-colors transition-transform active:scale-[0.98] active:bg-accent active:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background transition-colors transition-transform active:scale-[0.98] active:bg-accent active:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          aria-label="返回上一级"
+          title="返回上一级"
         >
-          返回个人主页
+          <ArrowLeft class="h-5 w-5" />
         </RouterLink>
       </div>
     </header>

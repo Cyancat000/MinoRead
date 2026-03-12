@@ -5,10 +5,15 @@ const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: () => import('@/pages/HomePage.vue') },
     {
+      path: '/categories',
+      name: 'categories',
+      meta: { showTabbar: true },
+      component: () => import('@/pages/CategoriesPage.vue'),
+    },
+    {
       path: '/search',
       name: 'search',
-      meta: { showTabbar: true },
-      component: () => import('@/pages/SearchPage.vue'),
+      component: () => import('@/pages/SearchResultsPage.vue'),
     },
     {
       path: '/rankings',

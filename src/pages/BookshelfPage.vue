@@ -49,14 +49,17 @@ onMounted(async () => {
     >
       <div class="flex items-center justify-between gap-3">
         <h1 class="text-lg font-semibold tracking-tight">书架</h1>
-        <select
-          v-model="size"
-          class="h-9 rounded-md border border-input bg-background px-2 text-sm"
-        >
-          <option value="small">小</option>
-          <option value="medium">中</option>
-          <option value="large">大</option>
-        </select>
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-muted-foreground">封面大小</label>
+          <select
+            v-model="size"
+            class="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            <option value="small">小</option>
+            <option value="medium">中</option>
+            <option value="large">大</option>
+          </select>
+        </div>
       </div>
     </header>
 
