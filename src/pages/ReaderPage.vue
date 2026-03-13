@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowLeft, Minus, Moon, Plus, Settings2, Sun } from 'lucide-vue-next'
+import { getMockData } from '@/lib/mock'
 
 const route = useRoute()
 const bookId = computed(() => String(route.params.id ?? '').trim())
@@ -10,6 +11,7 @@ const chapterId = computed(() => String(route.params.chapter ?? '').trim())
 const loading = ref(false)
 const error = ref('')
 const content = ref('')
+const bookTitle = ref('')
 
 const dark = ref(false)
 const fontSize = ref(17)
@@ -41,6 +43,21 @@ const loadText = async () => {
   }
 }
 
+const loadBookTitle = async () => {
+  const id = bookId.value
+  if (!id) {
+    bookTitle.value = ''
+    return
+  }
+  try {
+    const res = await getMockData(`/books/${encodeURIComponent(id)}`, 60, true)
+    const title = String((res?.data as any)?.title ?? '').trim()
+    bookTitle.value = title
+  } catch (_e) {
+    bookTitle.value = ''
+  }
+}
+
 const clampFontSize = (v: number) => Math.max(14, Math.min(26, v))
 
 const decFont = () => {
@@ -63,6 +80,14 @@ const cycleLineHeight = () => {
 }
 
 onMounted(loadText)
+
+watch(
+  () => bookId.value,
+  async () => {
+    await loadBookTitle()
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -83,7 +108,7 @@ onMounted(loadText)
             <ArrowLeft class="h-5 w-5" />
           </RouterLink>
           <div class="grid">
-            <h1 class="text-base font-semibold tracking-tight">阅读器</h1>
+            <h1 class="text-base font-semibold tracking-tight">{{ bookTitle || '书籍' }}</h1>
             <div v-if="chapterId" class="text-[11px] text-muted-foreground">第 {{ chapterId }} 章</div>
           </div>
         </div>

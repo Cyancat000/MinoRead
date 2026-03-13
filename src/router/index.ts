@@ -35,6 +35,18 @@ const router = createRouter({
     },
     { path: '/book/:id', name: 'book-detail', component: () => import('@/pages/BookDetailPage.vue') },
     {
+      path: '/author/:id',
+      name: 'author-books',
+      component: () => import('@/pages/CollectionListPage.vue'),
+      meta: { kind: 'author' },
+    },
+    {
+      path: '/series/:id',
+      name: 'series-books',
+      component: () => import('@/pages/CollectionListPage.vue'),
+      meta: { kind: 'series' },
+    },
+    {
       path: '/toc/:id',
       name: 'toc',
       redirect: (to) => ({ path: `/book/${String(to.params.id ?? '')}`, query: { tab: 'toc' } }),

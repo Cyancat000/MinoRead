@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Home } from 'lucide-vue-next'
+import { Home, Layers, UserRound } from 'lucide-vue-next'
 import { getMockData } from '@/lib/mock'
 
 type Book = {
   id: number
   title: string
   cover: string
+  authorId: number
   authorName?: string
+  seriesId?: number | null
   seriesName?: string
   dbRating?: number
   length?: number
   desc?: string
+  award?: { title: string; edtion?: string }[]
   chapters?: { id: number; title: string }[]
 }
 
@@ -147,7 +150,7 @@ onMounted(load)
       <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
       <div v-else-if="book" class="grid gap-4">
         <div class="flex gap-3">
-          <div class="relative h-28 w-20 flex-none overflow-hidden rounded-md border border-border bg-muted">
+          <div class="relative h-40 w-28 flex-none overflow-hidden rounded-md border border-border bg-muted">
             <img
               :src="book.cover"
               :alt="book.title"
@@ -158,13 +161,40 @@ onMounted(load)
           <div class="min-w-0 flex-1">
             <div class="text-base font-semibold text-foreground">{{ book.title }}</div>
             <div class="mt-1 text-sm text-muted-foreground">
-              {{ book.authorName || '未知作者' }}<span v-if="book.seriesName"> · {{ book.seriesName }}</span>
+              <RouterLink
+                :to="`/author/${book.authorId}`"
+                class="inline-flex h-6 items-center gap-1 rounded-full border border-border bg-muted px-2 text-[11px] text-muted-foreground transition-transform active:scale-[0.98]"
+                :title="book.authorName || '未知作者'"
+              >
+                <UserRound class="h-3.5 w-3.5" />
+                <span class="max-w-44 truncate">{{ book.authorName || '未知作者' }}</span>
+              </RouterLink>
+              <span v-if="book.seriesId && book.seriesName" class="w-0.5 h-1 inline-block"> </span>
+              <RouterLink
+                v-if="book.seriesId && book.seriesName"
+                :to="`/series/${book.seriesId}`"
+                class="inline-flex h-6 items-center gap-1 rounded-full border border-border bg-muted px-2 text-[11px] text-muted-foreground transition-transform active:scale-[0.98]"
+                :title="book.seriesName"
+              >
+                <Layers class="h-3.5 w-3.5" />
+                <span class="max-w-44 truncate">{{ book.seriesName }}</span>
+              </RouterLink>
             </div>
             <div class="mt-2 text-xs text-muted-foreground">
               <span v-if="typeof book.dbRating === 'number'">豆瓣 {{ book.dbRating.toFixed(1) }}</span>
               <span v-if="typeof book.length === 'number' && Number.isFinite(book.length)">
                 <span v-if="typeof book.dbRating === 'number'"> · </span>{{ book.length }} 字
               </span>
+            </div>
+            <div v-if="book.award && book.award.length > 0" class="mt-2 flex flex-wrap gap-2">
+              <div
+                v-for="(a, i) in book.award"
+                :key="i"
+                class="inline-flex h-5 items-center rounded-full border border-border bg-muted px-1.5 text-[10px] text-muted-foreground"
+              >
+                <span class="truncate">{{ a.title }}</span>
+                <span v-if="a.edtion" class="truncate"> · {{ a.edtion }}</span>
+              </div>
             </div>
           </div>
         </div>

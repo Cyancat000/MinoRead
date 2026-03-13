@@ -361,7 +361,15 @@ const buildMockData = () => {
   mockData.categories = categories
   mockData.rankings = rankings
   mockData.comments = comments
-  mockData.user = mockDataRaw.userInfo
+  const baseUser = mockDataRaw.userInfo ?? {}
+  mockData.user = {
+    ...baseUser,
+    stats: {
+      ...(baseUser.stats ?? {}),
+      bookshelfCount: bookshelf.length,
+      historyCount: historyExpanded.length,
+    },
+  }
 }
 
 buildMockData()
@@ -398,6 +406,22 @@ const resolveByPath = (path) => {
     if (parts.length === 1) return mockData.categories
     const id = Number(parts[1])
     return mockData.categories.find((c) => c.id === id) ?? null
+  }
+  if (parts[0] === 'authors') {
+    if (parts.length === 1) return mockDataRaw.authorList ?? []
+    const id = Number(parts[1])
+    if (!Number.isFinite(id)) return null
+    const author = (mockDataRaw.authorList ?? []).find((a) => Number(a.id) === id) ?? null
+    const books = (mockData.books ?? []).filter((b) => Number(b.authorId) === id)
+    return { id, name: author?.name ?? '', books }
+  }
+  if (parts[0] === 'series') {
+    if (parts.length === 1) return mockDataRaw.seriesList ?? []
+    const id = Number(parts[1])
+    if (!Number.isFinite(id)) return null
+    const series = (mockDataRaw.seriesList ?? []).find((s) => Number(s.id) === id) ?? null
+    const books = (mockData.books ?? []).filter((b) => Number(b.seriesId) === id)
+    return { id, name: series?.name ?? '', books }
   }
   if (parts[0] === 'rankings') return mockData.rankings
   if (parts[0] === 'user') return mockData.user
