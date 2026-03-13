@@ -36,7 +36,7 @@ const mockDataRaw = {
   authorList: [{ name: "京极夏彦", id: 101 }, { name: "御堂彰彦", id: 102 }, { name: "樱庭一树", id: 103 }, { name: "贵志祐介", id: 104 }, { name: "王朔", id: 105 }, { name: "朱迪斯 巴特勒", id: 106 }],
   seriesList: [{ name: "魍魉之匣", id: 101 }, { name: "付丧堂骨董店", id: 102}],
   bookshelfList: [{ id: 101 }, { id: 102 }, { id: 103 }, { id: 111 }, { id: 112 }, { id: 113 }, { id: 114 }, { id: 109 }],
-  historyList: [{ id: 108 }, { id: 109 }, { id: 110 }, { id: 111 }, { id: 112 }, { id: 113 }, { id: 114 }],
+  historyList: [],
   //所有书都用这个desc
   desc: `
   日本推理小说“京极堂”系列第一部。
@@ -300,6 +300,11 @@ const buildMockData = () => {
   const history = mockDataRaw.historyList
     .map((x) => bookById.get(x.id))
     .filter(Boolean)
+  const historyExpanded = history.slice()
+  const desiredHistoryCount = randInt(22, 30)
+  while (historyExpanded.length < desiredHistoryCount && books.length > 0) {
+    historyExpanded.push(pickOne(books))
+  }
 
   const allIds = books.map((b) => b.id)
   const categories = mockDataRaw.catelogList.map((c) => {
@@ -352,7 +357,7 @@ const buildMockData = () => {
 
   mockData.books = books
   mockData.bookshelf = bookshelf
-  mockData.history = history
+  mockData.history = historyExpanded
   mockData.categories = categories
   mockData.rankings = rankings
   mockData.comments = comments
