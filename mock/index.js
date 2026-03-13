@@ -134,7 +134,7 @@ const ensureRawGenerated = () => {
   mockDataRaw.userInfo = {
     id: 1,
     name: 'Mino',
-    avatar: 'mock/images/avatar.svg',
+    avatar: 'avatar.svg',
     level: 12,
     bio: '保持阅读，保持好奇。',
     stats: {
@@ -284,7 +284,7 @@ const buildMockData = () => {
       dbRating: Number(b.dbRating),
       desc: mockDataRaw.desc.trim(),
       // 使用相对路径以兼容打包后 file:// 双击打开
-      cover: `mock/images/cover/${b.id}.jpg`,
+      cover: `cover/${b.id}.jpg`,
       chapters,
     }
     return mapped

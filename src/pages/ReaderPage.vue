@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowLeft, Minus, Moon, Plus, Settings2, Sun } from 'lucide-vue-next'
 import { getMockData } from '@/lib/mock'
+import bookText from '../../mock/book.txt?raw'
 
 const route = useRoute()
 const bookId = computed(() => String(route.params.id ?? '').trim())
@@ -32,9 +33,7 @@ const loadText = async () => {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch('mock/book.txt', { cache: 'no-cache' })
-    if (!res.ok) throw new Error('load failed')
-    content.value = await res.text()
+    content.value = String(bookText ?? '')
   } catch (_e) {
     error.value = '内容加载失败'
     content.value = ''
