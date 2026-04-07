@@ -141,12 +141,11 @@ watch(
 
     <div
       v-if="showSettings"
-      class="fixed inset-0 z-20 flex items-end"
+      class="fixed inset-0 z-20 flex justify-end bg-black/40"
       @click.self="showSettings = false"
     >
-      <div class="absolute inset-0 bg-black/40" />
       <div
-        class="relative w-full rounded-t-2xl border border-border bg-background p-4"
+        class="relative h-full w-80 border-l border-border bg-background p-6 shadow-2xl"
         :class="dark ? 'border-zinc-800 bg-zinc-950 text-zinc-100' : ''"
       >
         <div class="flex items-center justify-between gap-2">

@@ -15,7 +15,7 @@ const error = ref('')
 const books = ref<Book[]>([])
 
 const size = ref<'small' | 'medium' | 'large'>('medium')
-const cols = computed(() => (size.value === 'small' ? 4 : size.value === 'large' ? 2 : 3))
+const cols = computed(() => (size.value === 'small' ? 8 : size.value === 'large' ? 4 : 6))
 const gridStyle = computed(() => ({
   display: 'grid',
   gridTemplateColumns: `repeat(${cols.value}, minmax(0, 1fr))`,

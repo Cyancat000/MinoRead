@@ -6,20 +6,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'bookshelf',
-      meta: { showTabbar: true },
+      meta: { showSidebar: true },
       component: () => import('@/pages/BookshelfPage.vue'),
     },
     { path: '/bookshelf', redirect: '/' },
     {
       path: '/categories',
       name: 'categories',
-      meta: { showTabbar: true },
+      meta: { showSidebar: true },
       component: () => import('@/pages/CategoriesPage.vue'),
     },
     {
       path: '/categories/:id',
       name: 'category-list',
-      meta: { showTabbar: true },
+      meta: { showSidebar: true },
       component: () => import('@/pages/CategoryListPage.vue'),
     },
     {
@@ -30,7 +30,7 @@ const router = createRouter({
     {
       path: '/rankings',
       name: 'rankings',
-      meta: { showTabbar: true },
+      meta: { showSidebar: true },
       component: () => import('@/pages/RankingsPage.vue'),
     },
     { path: '/book/:id', name: 'book-detail', component: () => import('@/pages/BookDetailPage.vue') },
@@ -61,7 +61,7 @@ const router = createRouter({
     {
       path: '/profile',
       name: 'profile',
-      meta: { showTabbar: true },
+      meta: { showSidebar: true },
       component: () => import('@/pages/ProfilePage.vue'),
     },
     { path: '/history', name: 'history', component: () => import('@/pages/HistoryPage.vue') },

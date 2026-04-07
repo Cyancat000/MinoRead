@@ -131,7 +131,7 @@ onMounted(async () => {
 
       <div v-if="loading" class="text-sm text-muted-foreground">加载中...</div>
       <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
-      <div v-else class="grid gap-2">
+      <div v-else class="grid grid-cols-2 gap-4 xl:grid-cols-3">
         <BookListItem
           v-for="item in visibleList"
           :key="item.book.id"

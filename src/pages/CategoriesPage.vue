@@ -50,7 +50,7 @@ onMounted(async () => {
       <SearchBar class="mb-3" />
       <div v-if="loading" class="text-sm text-muted-foreground">加载中...</div>
       <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
-      <div v-else class="grid gap-2">
+      <div v-else class="grid grid-cols-3 gap-4 xl:grid-cols-4">
         <RouterLink
           v-for="c in categories"
           :key="c.id"

@@ -83,8 +83,8 @@ onMounted(load)
     <main ref="mainEl" class="min-h-0 flex-1 overflow-auto p-4" @scroll="onScroll">
       <div v-if="loading" class="text-sm text-muted-foreground">加载中...</div>
       <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
-      <div v-else class="grid gap-2">
-        <div class="text-xs text-muted-foreground">共 {{ total }} 条</div>
+      <div v-else class="grid grid-cols-2 gap-4 xl:grid-cols-3">
+        <div class="col-span-full text-xs text-muted-foreground">共 {{ total }} 条</div>
         <BookListItem v-for="(b, i) in visibleList" :key="`${b.id}-${i}`" :book="b" />
 
         <div v-if="total === 0" class="py-2 text-center text-xs text-muted-foreground">暂无历史</div>
