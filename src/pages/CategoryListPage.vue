@@ -190,9 +190,12 @@ onMounted(load)
             <div
               v-for="b in visibleBooks"
               :key="b.id"
-              class="group relative flex flex-col overflow-hidden transition-all"
+              class="group flex flex-col overflow-hidden transition-all"
             >
-              <RouterLink :to="'/book/' + b.id" class="aspect-[3/4.2] overflow-hidden rounded-xl border border-border bg-muted shadow-sm group-hover:shadow-md">
+              <RouterLink
+                :to="'/book/' + b.id"
+                class="relative aspect-[3/4.2] overflow-hidden rounded-xl border border-border bg-muted shadow-sm transition-all group-hover:shadow-md"
+              >
                 <img
                   :src="b.cover"
                   :alt="b.title"
