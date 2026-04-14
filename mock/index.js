@@ -310,10 +310,13 @@ const buildMockData = () => {
     historyExpanded.push({ ...pickOne(books), progress: randInt(1, 99) })
   }
 
-  // 为 bookshelf 也增加进度（已读完的或进行中的）
-  mockData.bookshelf = bookshelf.map(b => ({
+  // 为 bookshelf 也增加进度（已读完的或进行中的）和更新状态
+  mockData.bookshelf = bookshelf.map((b, idx) => ({
     ...b,
-    progress: pickOne([0, 10, 30, 60, 100])
+    progress: pickOne([0, 10, 30, 60, 100]),
+    hasUpdate: idx % 3 === 0, // 每3本模拟一个有更新
+    lastUpdateChapter: idx % 3 === 0 ? `第${randInt(31, 50)}章 ${pickOne(chapterTitlePool)}` : null,
+    lastUpdateTime: idx % 3 === 0 ? '10分钟前' : '昨天'
   }))
 
   const allIds = books.map((b) => b.id)
