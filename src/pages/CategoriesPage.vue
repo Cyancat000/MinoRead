@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Home } from 'lucide-vue-next'
+import { 
+  Home, 
+  Search, 
+  Sparkles, 
+  FileText, 
+  Landmark, 
+  Globe, 
+  Swords, 
+  Coins, 
+  Rocket, 
+  Leaf, 
+  Flame, 
+  Book 
+} from 'lucide-vue-next'
 import SearchBar from '@/components/SearchBar.vue'
 import { getMockData } from '@/lib/mock'
 
@@ -9,7 +22,7 @@ type Category = {
   name: string
   books: { id: number; cover: string }[]
   description?: string
-  icon?: string
+  icon?: any
   bookCount: number
 }
 
@@ -17,18 +30,18 @@ const loading = ref(false)
 const error = ref('')
 const categories = ref<Category[]>([])
 
-// 模拟分类描述和图标
-const categoryMeta: Record<string, { desc: string; icon: string }> = {
-  '悬疑推理': { desc: '逻辑与真相的博弈，揭开层层迷雾。', icon: '🔍' },
-  '奇幻悬疑': { desc: '超自然力量与未知的交织，探索奇幻之境。', icon: '✨' },
-  '纪实文学': { desc: '真实的力量，记录时代与生命的印记。', icon: '📝' },
-  '人文历史': { desc: '穿越时空，对话古今，洞察人类文明。', icon: '🏛️' },
-  '社会科学': { desc: '解析社会运行逻辑，理解复杂的世界。', icon: '🌐' },
-  '政治军事': { desc: '权力的游戏与硝烟的记忆。', icon: '⚔️' },
-  '投资理财': { desc: '智慧理财，掌控财富，规划未来。', icon: '💰' },
-  '创业经营': { desc: '商业智慧，实战经验，成就梦想。', icon: '🚀' },
-  '生活百科': { desc: '发现生活之美，掌握实用技能。', icon: '🌱' },
-  '励志成长': { desc: '点燃热情，超越自我，追求卓越。', icon: '🔥' },
+// 模拟分类描述和图标映射
+const categoryMeta: Record<string, { desc: string; icon: any }> = {
+  '悬疑推理': { desc: '逻辑与真相的博弈，揭开层层迷雾。', icon: Search },
+  '奇幻悬疑': { desc: '超自然力量与未知的交织，探索奇幻之境。', icon: Sparkles },
+  '纪实文学': { desc: '真实的力量，记录时代与生命的印记。', icon: FileText },
+  '人文历史': { desc: '穿越时空，对话古今，洞察人类文明。', icon: Landmark },
+  '社会科学': { desc: '解析社会运行逻辑，理解复杂的世界。', icon: Globe },
+  '政治军事': { desc: '权力的游戏与硝烟的记忆。', icon: Swords },
+  '投资理财': { desc: '智慧理财，掌控财富，规划未来。', icon: Coins },
+  '创业经营': { desc: '商业智慧，实战经验，成就梦想。', icon: Rocket },
+  '生活百科': { desc: '发现生活之美，掌握实用技能。', icon: Leaf },
+  '励志成长': { desc: '点燃热情，超越自我，追求卓越。', icon: Flame },
 }
 
 onMounted(async () => {
@@ -101,8 +114,8 @@ onMounted(async () => {
           >
             <!-- Category Header -->
             <div class="mb-4 flex items-start justify-between">
-              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-2xl shadow-inner transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                {{ c.icon || '📚' }}
+              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-inner transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <component :is="c.icon || Book" class="h-6 w-6" />
               </div>
               <div class="rounded-full bg-muted px-2.5 py-1 text-[10px] font-bold text-muted-foreground uppercase tracking-wider group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                 {{ c.bookCount }} 本
@@ -135,8 +148,8 @@ onMounted(async () => {
             </div>
 
             <!-- Hover Effect Background Icon -->
-            <div class="pointer-events-none absolute -bottom-4 -right-4 text-8xl opacity-[0.03] transition-transform group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-[0.05]">
-              {{ c.icon || '📚' }}
+            <div class="pointer-events-none absolute -bottom-4 -right-4 text-primary opacity-[0.03] transition-transform group-hover:scale-110 group-hover:rotate-12 group-hover:opacity-[0.05]">
+              <component :is="c.icon || Book" class="h-24 w-24" />
             </div>
           </RouterLink>
         </div>

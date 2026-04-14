@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft } from 'lucide-vue-next'
+import { ArrowLeft, Star } from 'lucide-vue-next'
 import { getMockData } from '@/lib/mock'
 import BookListItem from '@/components/BookListItem.vue'
 
@@ -208,8 +208,9 @@ onMounted(load)
                 </div>
                 <div class="mb-1.5 flex items-center justify-between gap-1">
                   <span class="truncate text-[11px] text-muted-foreground">{{ b.authorName }}</span>
-                  <div v-if="b.dbRating" class="flex-shrink-0 text-[10px] font-bold text-orange-500">
-                    ★ {{ b.dbRating.toFixed(1) }}
+                  <div v-if="b.dbRating" class="flex items-center gap-0.5 text-[10px] font-bold text-orange-500">
+                    <Star class="h-2.5 w-2.5 fill-orange-500" />
+                    {{ b.dbRating.toFixed(1) }}
                   </div>
                 </div>
                 <div class="mt-auto flex items-center gap-2">

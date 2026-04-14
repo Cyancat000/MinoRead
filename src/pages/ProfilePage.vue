@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { Home } from 'lucide-vue-next'
-import { Bell, BookOpen, Download, Heart, Settings, Shield, UserRound } from 'lucide-vue-next'
+import { 
+  Bell, 
+  BookOpen, 
+  Download, 
+  Heart, 
+  Settings, 
+  Shield, 
+  UserRound, 
+  Flame, 
+  Clock 
+} from 'lucide-vue-next'
 import { getMockData } from '@/lib/mock'
 
 type User = {
@@ -158,14 +168,14 @@ onMounted(async () => {
               </div>
               <div class="group rounded-2xl border border-border bg-background p-6 transition-all hover:border-primary/50 hover:shadow-md">
                 <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 transition-colors group-hover:bg-orange-500 group-hover:text-white">
-                  <div class="h-5 w-5 font-bold flex items-center justify-center">🔥</div>
+                  <Flame class="h-5 w-5" />
                 </div>
                 <div class="text-3xl font-bold tabular-nums text-foreground">{{ user?.stats?.streakDays ?? 0 }}</div>
                 <div class="mt-1 text-sm text-muted-foreground">连续阅读 (天)</div>
               </div>
               <div class="group rounded-2xl border border-border bg-background p-6 transition-all hover:border-primary/50 hover:shadow-md">
                 <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-500 transition-colors group-hover:bg-blue-500 group-hover:text-white">
-                  <div class="h-5 w-5 font-bold flex items-center justify-center">⏱️</div>
+                  <Clock class="h-5 w-5" />
                 </div>
                 <div class="text-3xl font-bold tabular-nums text-foreground">{{ user?.stats?.totalMinutes ?? 0 }}</div>
                 <div class="mt-1 text-sm text-muted-foreground">累计阅读 (分钟)</div>

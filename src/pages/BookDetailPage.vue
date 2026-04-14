@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Home, Layers, UserRound } from 'lucide-vue-next'
+import { Home, Layers, UserRound, Trophy, ThumbsUp, Star } from 'lucide-vue-next'
 import { getMockData } from '@/lib/mock'
 
 type Book = {
@@ -231,13 +231,14 @@ onMounted(load)
                   </div>
                 </div>
 
-                <div v-if="book.award && book.award.length > 0" class="flex flex-wrap gap-2">
+                <div v-if="book.award && book.award.length > 0" class="mt-2 flex flex-wrap gap-2">
                   <div
                     v-for="(a, i) in book.award"
                     :key="i"
-                    class="inline-flex h-6 items-center rounded-full border border-orange-500/20 bg-orange-500/5 px-3 text-[11px] font-medium text-orange-600"
+                    class="inline-flex h-6 items-center gap-1.5 rounded-full border border-orange-500/20 bg-orange-500/5 px-3 text-[11px] font-medium text-orange-600"
                   >
-                    🏆 {{ a.title }} <span v-if="a.edtion" class="ml-1 opacity-70"> · {{ a.edtion }}</span>
+                    <Trophy class="h-3 w-3" />
+                    {{ a.title }} <span v-if="a.edtion" class="ml-1 opacity-70"> · {{ a.edtion }}</span>
                   </div>
                 </div>
               </div>
@@ -351,7 +352,8 @@ onMounted(load)
                       <div class="flex items-center justify-between gap-2">
                         <div class="text-base font-bold text-foreground">{{ c.userName }}</div>
                         <div class="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground">
-                          👍 {{ c.likeCount }}
+                          <ThumbsUp class="h-3 w-3" />
+                          {{ c.likeCount }}
                         </div>
                       </div>
                       <div class="text-base leading-relaxed text-muted-foreground">
@@ -385,7 +387,8 @@ onMounted(load)
                     </h4>
                     <p class="mt-1 truncate text-xs text-muted-foreground">{{ rb.authorName }}</p>
                     <div class="mt-2 flex items-center gap-1 text-[10px] font-bold text-orange-500">
-                      ★ {{ rb.dbRating?.toFixed(1) }}
+                      <Star class="h-2.5 w-2.5 fill-orange-500" />
+                      {{ rb.dbRating?.toFixed(1) }}
                     </div>
                   </div>
                 </RouterLink>
