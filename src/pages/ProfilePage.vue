@@ -209,7 +209,8 @@ onMounted(async () => {
                 <div class="text-xs text-muted-foreground">{{ user?.stats?.historyCount ?? 0 }} 条</div>
               </div>
             </RouterLink>
-            <button
+            <RouterLink
+              to="/favorites"
               class="flex items-center gap-4 rounded-2xl border border-border bg-background p-4 transition-all hover:bg-accent active:scale-[0.98]"
             >
               <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-foreground">
@@ -219,7 +220,7 @@ onMounted(async () => {
                 <div class="text-sm font-bold">我的收藏</div>
                 <div class="text-xs text-muted-foreground">{{ user?.stats?.favoriteCount ?? 0 }} 个</div>
               </div>
-            </button>
+            </RouterLink>
           </section>
 
           <!-- Recent Reading -->

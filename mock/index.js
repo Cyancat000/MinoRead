@@ -441,6 +441,7 @@ const resolveByPath = (path) => {
   if (parts[0] === 'user') {
     if (parts.length === 1) return mockData.user
     if (parts[1] === 'recent') return (mockData.history ?? []).slice(0, 4)
+    if (parts[1] === 'favorites') return (mockData.books ?? []).slice(0, 15) // 模拟 15 本收藏
     return null
   }
   if (parts[0] === 'search') {

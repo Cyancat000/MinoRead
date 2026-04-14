@@ -47,6 +47,12 @@ const router = createRouter({
       meta: { kind: 'series' },
     },
     {
+      path: '/favorites',
+      name: 'favorites',
+      component: () => import('@/pages/CollectionListPage.vue'),
+      meta: { kind: 'favorite' },
+    },
+    {
       path: '/toc/:id',
       name: 'toc',
       redirect: (to) => ({ path: `/book/${String(to.params.id ?? '')}`, query: { tab: 'toc' } }),
