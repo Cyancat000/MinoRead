@@ -44,6 +44,7 @@ const tab = ref<'toc' | 'comments'>('toc')
 const commentsLoading = ref(false)
 const commentsError = ref('')
 const comments = ref<CommentItem[]>([])
+const relatedBooks = ref<Book[]>([])
 
 const id = computed(() => String(route.params.id ?? '').trim())
 const tabQuery = computed(() => String(route.query.tab ?? '').trim())
@@ -85,6 +86,20 @@ const loadComments = async () => {
   }
 }
 
+const loadRelated = async () => {
+  try {
+    const res = await getMockData('/books', 0, true)
+    const allBooks = (res?.data as Book[]) ?? []
+    // 随机选 4 本作为相关推荐
+    relatedBooks.value = allBooks
+      .filter(b => b.id !== Number(id.value))
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4)
+  } catch (_e) {
+    relatedBooks.value = []
+  }
+}
+
 const load = async () => {
   if (!id.value) return
   loading.value = true
@@ -102,6 +117,7 @@ const load = async () => {
     comments.value = []
     setTabFromQuery()
     if (tab.value === 'comments') await loadComments()
+    await loadRelated()
   } catch (_e) {
     error.value = '加载失败'
   } finally {
@@ -128,173 +144,254 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col">
+  <div class="min-h-full w-full bg-muted/30">
     <header
-      class="sticky top-0 z-10 border-b bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      class="sticky top-0 z-20 border-b bg-background/95 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     >
-      <div class="flex items-center justify-between gap-3">
-        <h1 class="text-lg font-semibold tracking-tight">书籍详情</h1>
+      <div class="mx-auto flex max-w-[1200px] items-center justify-between">
+        <div class="flex items-center gap-4">
+          <button
+            type="button"
+            class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-input bg-background px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98]"
+            @click="router.back()"
+          >
+            返回
+          </button>
+          <div class="h-4 w-px bg-border"></div>
+          <p class="text-sm text-muted-foreground">{{ book?.title ?? '书籍详情' }}</p>
+        </div>
         <RouterLink
           to="/"
-          class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background transition-colors transition-transform active:scale-[0.98] active:bg-accent active:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          aria-label="返回首页"
-          title="返回首页"
+          class="inline-flex items-center gap-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98]"
         >
-          <Home class="h-5 w-5" />
+          <Home class="h-4 w-4" />
+          返回首页
         </RouterLink>
       </div>
     </header>
 
-    <main class="min-h-0 flex-1 overflow-auto p-4">
-      <div v-if="loading" class="text-sm text-muted-foreground">加载中...</div>
-      <div v-else-if="error" class="text-sm text-destructive">{{ error }}</div>
-      <div v-else-if="book" class="grid gap-4">
-        <div class="flex gap-3">
-          <div class="relative h-40 w-28 flex-none overflow-hidden rounded-md border border-border bg-muted">
-            <img
-              :src="book.cover"
-              :alt="book.title"
-              class="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-            />
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="text-base font-semibold text-foreground">{{ book.title }}</div>
-            <div class="mt-1 text-sm text-muted-foreground">
-              <RouterLink
-                :to="`/author/${book.authorId}`"
-                class="inline-flex h-6 items-center gap-1 rounded-full border border-border bg-muted px-2 text-[11px] text-muted-foreground transition-transform active:scale-[0.98]"
-                :title="book.authorName || '未知作者'"
-              >
-                <UserRound class="h-3.5 w-3.5" />
-                <span class="max-w-44 truncate">{{ book.authorName || '未知作者' }}</span>
-              </RouterLink>
-              <span v-if="book.seriesId && book.seriesName" class="w-0.5 h-1 inline-block"> </span>
-              <RouterLink
-                v-if="book.seriesId && book.seriesName"
-                :to="`/series/${book.seriesId}`"
-                class="inline-flex h-6 items-center gap-1 rounded-full border border-border bg-muted px-2 text-[11px] text-muted-foreground transition-transform active:scale-[0.98]"
-                :title="book.seriesName"
-              >
-                <Layers class="h-3.5 w-3.5" />
-                <span class="max-w-44 truncate">{{ book.seriesName }}</span>
-              </RouterLink>
+    <main class="mx-auto max-w-[1200px] px-6 py-8">
+      <div v-if="loading" class="flex h-64 items-center justify-center">
+        <div class="flex flex-col items-center gap-3 text-muted-foreground">
+          <div class="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          加载中...
+        </div>
+      </div>
+      <div v-else-if="error" class="flex h-64 items-center justify-center text-destructive">{{ error }}</div>
+      <div v-else-if="book" class="flex flex-col gap-8">
+        <!-- Hero Section -->
+        <section class="rounded-3xl border border-border bg-background p-8 shadow-sm">
+          <div class="flex flex-col gap-8 md:flex-row md:items-start">
+            <!-- Cover -->
+            <div class="relative h-[320px] w-[240px] flex-none overflow-hidden rounded-2xl border border-border bg-muted shadow-lg">
+              <img
+                :src="book.cover"
+                :alt="book.title"
+                class="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
-            <div class="mt-2 text-xs text-muted-foreground">
-              <span v-if="typeof book.dbRating === 'number'">豆瓣 {{ book.dbRating.toFixed(1) }}</span>
-              <span v-if="typeof book.length === 'number' && Number.isFinite(book.length)">
-                <span v-if="typeof book.dbRating === 'number'"> · </span>{{ book.length }} 字
-              </span>
-            </div>
-            <div v-if="book.award && book.award.length > 0" class="mt-2 flex flex-wrap gap-2">
-              <div
-                v-for="(a, i) in book.award"
-                :key="i"
-                class="inline-flex h-5 items-center rounded-full border border-border bg-muted px-1.5 text-[10px] text-muted-foreground"
-              >
-                <span class="truncate">{{ a.title }}</span>
-                <span v-if="a.edtion" class="truncate"> · {{ a.edtion }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="book.desc" class="grid gap-2">
-          <div class="text-sm leading-relaxed text-muted-foreground" :style="descStyle">
-            {{ book.desc }}
-          </div>
-          <button
-            v-if="descShowToggle"
-            type="button"
-            class="w-fit text-xs font-medium text-primary transition-transform active:scale-[0.98]"
-            @click="descExpanded = !descExpanded"
-          >
-            {{ descExpanded ? '收起' : '展开全部' }}
-          </button>
-        </div>
-
-        <div class="grid gap-2">
-          <div class="grid grid-cols-2 gap-2">
-            <RouterLink
-              :to="`/reader/${book.id}/1`"
-              class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors transition-transform active:scale-[0.98] active:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-              立即阅读
-            </RouterLink>
-            <button
-              type="button"
-              class="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 text-sm font-medium transition-colors transition-transform active:scale-[0.98] active:bg-accent active:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              @click="inShelf = !inShelf"
-            >
-              {{ inShelf ? '已加入书架' : '加入书架' }}
-            </button>
-          </div>
-        </div>
-
-        <div class="rounded-xl border border-border bg-background p-2">
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              class="inline-flex h-9 items-center justify-center rounded-lg text-sm font-medium transition-transform active:scale-[0.98]"
-              :class="tab === 'toc' ? 'bg-muted text-foreground' : 'text-muted-foreground'"
-              @click="router.replace({ query: { ...route.query, tab: 'toc' } })"
-            >
-              目录
-            </button>
-            <button
-              type="button"
-              class="inline-flex h-9 items-center justify-center rounded-lg text-sm font-medium transition-transform active:scale-[0.98]"
-              :class="tab === 'comments' ? 'bg-muted text-foreground' : 'text-muted-foreground'"
-              @click="router.replace({ query: { ...route.query, tab: 'comments' } })"
-            >
-              评论
-            </button>
-          </div>
-        </div>
-
-        <div v-if="tab === 'toc'" class="grid gap-2">
-          <div v-if="!book.chapters || book.chapters.length === 0" class="text-xs text-muted-foreground">
-            暂无目录
-          </div>
-          <button
-            v-for="c in book.chapters"
-            :key="c.id"
-            type="button"
-            class="flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-3 py-3 text-left transition-transform active:scale-[0.98]"
-            @click="router.push(`/reader/${book.id}/${c.id}`)"
-          >
-            <div class="min-w-0 flex-1">
-              <div class="truncate text-sm text-foreground">{{ c.title }}</div>
-              <div class="mt-0.5 text-[11px] text-muted-foreground">第 {{ c.id }} 章</div>
-            </div>
-            <div class="text-xs text-muted-foreground">阅读</div>
-          </button>
-        </div>
-
-        <div v-else class="grid gap-3">
-          <div v-if="commentsLoading" class="text-sm text-muted-foreground">加载中...</div>
-          <div v-else-if="commentsError" class="text-sm text-destructive">{{ commentsError }}</div>
-          <div v-else-if="comments.length === 0" class="text-xs text-muted-foreground">还没有评论</div>
-          <div v-else class="grid gap-2">
-            <div
-              v-for="c in comments"
-              :key="c.id"
-              class="flex gap-3 rounded-xl border border-border bg-background p-3"
-            >
-              <div class="relative h-9 w-9 flex-none overflow-hidden rounded-full border border-border bg-muted">
-                <img :src="c.userAvatar" :alt="c.userName" class="absolute inset-0 h-full w-full object-cover" />
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center justify-between gap-2">
-                  <div class="truncate text-sm font-medium text-foreground">{{ c.userName }}</div>
-                  <div class="text-[11px] text-muted-foreground tabular-nums">{{ c.likeCount }}</div>
+            
+            <!-- Book Info -->
+            <div class="flex min-w-0 flex-1 flex-col pt-2">
+              <div class="space-y-4">
+                <h2 class="text-4xl font-bold tracking-tight text-foreground">{{ book.title }}</h2>
+                
+                <div class="flex flex-wrap items-center gap-3">
+                  <RouterLink
+                    :to="`/author/${book.authorId}`"
+                    class="inline-flex h-8 items-center gap-2 rounded-full border border-border bg-muted px-4 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-[0.98]"
+                  >
+                    <UserRound class="h-4 w-4" />
+                    {{ book.authorName || '未知作者' }}
+                  </RouterLink>
+                  <RouterLink
+                    v-if="book.seriesId && book.seriesName"
+                    :to="`/series/${book.seriesId}`"
+                    class="inline-flex h-8 items-center gap-2 rounded-full border border-border bg-muted px-4 text-sm font-medium text-muted-foreground transition-all hover:border-primary hover:text-primary active:scale-[0.98]"
+                  >
+                    <Layers class="h-4 w-4" />
+                    {{ book.seriesName }}
+                  </RouterLink>
                 </div>
-                <div class="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  {{ c.content }}
+
+                <div class="flex items-center gap-6">
+                  <div class="flex flex-col">
+                    <span class="text-xs text-muted-foreground uppercase tracking-wider">豆瓣评分</span>
+                    <span class="text-2xl font-bold text-orange-500">
+                      {{ typeof book.dbRating === 'number' ? book.dbRating.toFixed(1) : '暂无' }}
+                    </span>
+                  </div>
+                  <div class="h-8 w-px bg-border"></div>
+                  <div class="flex flex-col">
+                    <span class="text-xs text-muted-foreground uppercase tracking-wider">字数</span>
+                    <span class="text-2xl font-bold text-foreground">
+                      {{ typeof book.length === 'number' && Number.isFinite(book.length) ? (book.length / 10000).toFixed(1) + '万' : '未知' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div v-if="book.award && book.award.length > 0" class="flex flex-wrap gap-2">
+                  <div
+                    v-for="(a, i) in book.award"
+                    :key="i"
+                    class="inline-flex h-6 items-center rounded-full border border-orange-500/20 bg-orange-500/5 px-3 text-[11px] font-medium text-orange-600"
+                  >
+                    🏆 {{ a.title }} <span v-if="a.edtion" class="ml-1 opacity-70"> · {{ a.edtion }}</span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Primary Actions -->
+              <div class="mt-auto flex flex-wrap gap-4 pt-8">
+                <RouterLink
+                  :to="`/reader/${book.id}/1`"
+                  class="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-xl active:scale-[0.98]"
+                >
+                  立即开始阅读
+                </RouterLink>
+                <button
+                  type="button"
+                  class="inline-flex h-12 items-center justify-center rounded-xl border border-input bg-background px-8 text-base font-bold transition-all hover:bg-accent hover:text-accent-foreground active:scale-[0.98]"
+                  @click="inShelf = !inShelf"
+                >
+                  {{ inShelf ? '已在书架中' : '加入我的书架' }}
+                </button>
+              </div>
             </div>
           </div>
+        </section>
+
+        <!-- Details Section -->
+        <div class="flex flex-col gap-8 lg:flex-row">
+          <!-- Main Content -->
+          <div class="flex-1 space-y-8">
+            <!-- Description -->
+            <section class="rounded-3xl border border-border bg-background p-8 shadow-sm">
+              <h3 class="mb-6 text-xl font-bold text-foreground">内容简介</h3>
+              <div class="relative">
+                <div 
+                  class="text-base leading-relaxed text-muted-foreground" 
+                  :style="descStyle"
+                >
+                  {{ book.desc }}
+                </div>
+                <button
+                  v-if="descShowToggle"
+                  type="button"
+                  class="mt-4 inline-flex items-center text-sm font-bold text-primary hover:underline"
+                  @click="descExpanded = !descExpanded"
+                >
+                  {{ descExpanded ? '收起简介' : '展开阅读完整简介' }}
+                </button>
+              </div>
+            </section>
+
+            <!-- Tabs (Toc / Comments) -->
+            <section class="rounded-3xl border border-border bg-background p-8 shadow-sm">
+              <div class="mb-8 border-b border-border">
+                <div class="flex gap-8">
+                  <button
+                    v-for="t in ['toc', 'comments']"
+                    :key="t"
+                    class="relative pb-4 text-base font-bold transition-colors"
+                    :class="tab === t ? 'text-primary' : 'text-muted-foreground hover:text-foreground'"
+                    @click="router.replace({ query: { ...route.query, tab: t } })"
+                  >
+                    {{ t === 'toc' ? '目录' : '书评' }}
+                    <div 
+                      v-if="tab === t" 
+                      class="absolute bottom-0 left-0 h-1 w-full rounded-full bg-primary"
+                    ></div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- TOC -->
+              <div v-if="tab === 'toc'" class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div v-if="!book.chapters || book.chapters.length === 0" class="py-12 text-center text-muted-foreground">
+                  暂无目录
+                </div>
+                <button
+                  v-for="c in book.chapters"
+                  :key="c.id"
+                  type="button"
+                  class="flex items-center gap-4 rounded-xl border border-transparent bg-muted/30 px-5 py-4 text-left transition-all hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98]"
+                  @click="router.push(`/reader/${book.id}/${c.id}`)"
+                >
+                  <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-background text-xs font-bold text-muted-foreground shadow-sm">
+                    {{ c.id }}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="truncate text-sm font-bold text-foreground">{{ c.title }}</div>
+                    <div class="mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground opacity-60">第 {{ c.id }} 章</div>
+                  </div>
+                </button>
+              </div>
+
+              <!-- Comments -->
+              <div v-else class="space-y-6">
+                <div v-if="commentsLoading" class="flex justify-center py-12">
+                  <div class="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                </div>
+                <div v-else-if="commentsError" class="py-12 text-center text-destructive">{{ commentsError }}</div>
+                <div v-else-if="comments.length === 0" class="py-12 text-center text-muted-foreground">
+                  暂无书评，来当第一个吧
+                </div>
+                <div v-else class="space-y-6">
+                  <div
+                    v-for="c in comments"
+                    :key="c.id"
+                    class="flex gap-4 border-b border-border/50 pb-6 last:border-0"
+                  >
+                    <div class="relative h-12 w-12 flex-none overflow-hidden rounded-2xl border border-border bg-muted shadow-sm">
+                      <img :src="c.userAvatar" :alt="c.userName" class="absolute inset-0 h-full w-full object-cover" />
+                    </div>
+                    <div class="min-w-0 flex-1 space-y-2">
+                      <div class="flex items-center justify-between gap-2">
+                        <div class="text-base font-bold text-foreground">{{ c.userName }}</div>
+                        <div class="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-bold text-muted-foreground">
+                          👍 {{ c.likeCount }}
+                        </div>
+                      </div>
+                      <div class="text-base leading-relaxed text-muted-foreground">
+                        {{ c.content }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="w-full space-y-8 lg:w-[320px]">
+            <!-- Recommendation -->
+            <section class="rounded-3xl border border-border bg-background p-6 shadow-sm">
+              <h3 class="mb-6 text-lg font-bold text-foreground">同类推荐</h3>
+              <div class="space-y-6">
+                <RouterLink
+                  v-for="rb in relatedBooks"
+                  :key="rb.id"
+                  :to="`/book/${rb.id}`"
+                  class="group flex gap-4 transition-transform active:scale-[0.98]"
+                >
+                  <div class="h-24 w-16 flex-none overflow-hidden rounded-xl border border-border bg-muted shadow-sm group-hover:shadow-md">
+                    <img :src="rb.cover" :alt="rb.title" class="h-full w-full object-cover" />
+                  </div>
+                  <div class="flex min-w-0 flex-col justify-center py-1">
+                    <h4 class="truncate text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                      {{ rb.title }}
+                    </h4>
+                    <p class="mt-1 truncate text-xs text-muted-foreground">{{ rb.authorName }}</p>
+                    <div class="mt-2 flex items-center gap-1 text-[10px] font-bold text-orange-500">
+                      ★ {{ rb.dbRating?.toFixed(1) }}
+                    </div>
+                  </div>
+                </RouterLink>
+              </div>
+            </section>
+          </aside>
         </div>
       </div>
     </main>

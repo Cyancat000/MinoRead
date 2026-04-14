@@ -137,6 +137,8 @@ const ensureRawGenerated = () => {
     avatar: 'avatar.svg',
     level: 12,
     bio: '保持阅读，保持好奇。',
+    membership: '高级会员',
+    joinedDate: '2024-01-15',
     stats: {
       yesterdayMinutes: randInt(0, 120),
       totalMinutes: randInt(300, 12000),
@@ -300,11 +302,19 @@ const buildMockData = () => {
   const history = mockDataRaw.historyList
     .map((x) => bookById.get(x.id))
     .filter(Boolean)
+    .map(b => ({ ...b, progress: randInt(1, 99) }))
+  
   const historyExpanded = history.slice()
   const desiredHistoryCount = randInt(22, 30)
   while (historyExpanded.length < desiredHistoryCount && books.length > 0) {
-    historyExpanded.push(pickOne(books))
+    historyExpanded.push({ ...pickOne(books), progress: randInt(1, 99) })
   }
+
+  // 为 bookshelf 也增加进度（已读完的或进行中的）
+  mockData.bookshelf = bookshelf.map(b => ({
+    ...b,
+    progress: pickOne([0, 10, 30, 60, 100])
+  }))
 
   const allIds = books.map((b) => b.id)
   const categories = mockDataRaw.catelogList.map((c) => {
@@ -396,6 +406,7 @@ const resolveByPath = (path) => {
 
   if (parts[0] === 'books') {
     if (parts.length === 1) return mockData.books
+    if (parts[1] === 'random') return pickOne(mockData.books)
     const id = Number(parts[1])
     return mockData.books.find((b) => b.id === id) ?? null
   }
@@ -424,7 +435,11 @@ const resolveByPath = (path) => {
     return { id, name: series?.name ?? '', books }
   }
   if (parts[0] === 'rankings') return mockData.rankings
-  if (parts[0] === 'user') return mockData.user
+  if (parts[0] === 'user') {
+    if (parts.length === 1) return mockData.user
+    if (parts[1] === 'recent') return (mockData.history ?? []).slice(0, 4)
+    return null
+  }
   if (parts[0] === 'search') {
     const q = String(query.q ?? '').trim().toLowerCase()
     if (!q) return []
