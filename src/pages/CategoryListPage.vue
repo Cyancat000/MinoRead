@@ -3,7 +3,6 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Star } from 'lucide-vue-next'
 import { getMockData } from '@/lib/mock'
-import BookListItem from '@/components/BookListItem.vue'
 
 type Book = {
   id: number

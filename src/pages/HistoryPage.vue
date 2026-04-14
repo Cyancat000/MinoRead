@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Clock, Trash2, Star, BookOpen } from 'lucide-vue-next'
+import { ArrowLeft, Clock, Trash2, Star } from 'lucide-vue-next'
 import { computed, onMounted, ref } from 'vue'
 import { getMockData } from '@/lib/mock'
 

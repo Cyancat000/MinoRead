@@ -21,7 +21,7 @@ type Category = {
   id: number
   name: string
   books: { id: number; cover: string }[]
-  description?: string
+  desc?: string
   icon?: any
   bookCount: number
 }

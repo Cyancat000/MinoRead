@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, onUnmounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
   ArrowLeft, Minus, Moon, Plus, Settings2, Sun, 
@@ -65,6 +65,11 @@ const loadBookData = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const scrollToTop = () => {
+  const el = document.getElementById('reader-content')
+  if (el) el.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const loadChapter = (id: number) => {
@@ -331,7 +336,7 @@ watch(
           <Moon v-else class="h-5 w-5" />
         </button>
         <button
-          @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+          @click="scrollToTop"
           class="mt-auto flex h-10 w-10 items-center justify-center rounded-full hover:bg-accent border border-border"
           title="回到顶部"
         >

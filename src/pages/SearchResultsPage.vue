@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Search, Star, BookOpen, AlertCircle } from 'lucide-vue-next'
+import { ArrowLeft, Search, Star, AlertCircle } from 'lucide-vue-next'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getMockData } from '@/lib/mock'
