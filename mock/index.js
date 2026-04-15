@@ -223,6 +223,8 @@ const mockData = {
   },
 }
 
+let nextVirtualBookId = 1000 // 用于生成虚拟书籍 ID
+
 const chapterTitlePool = [
   '雨夜来客',
   '不速之约',
@@ -293,7 +295,7 @@ const buildMockData = () => {
   })
 
   const bookById = new Map(books.map((b) => [b.id, b]))
-  let nextVirtualBookId = Math.max(0, ...books.map((b) => Number(b.id) || 0)) + 1
+  nextVirtualBookId = Math.max(nextVirtualBookId, ...books.map((b) => Number(b.id) || 0)) + 1
 
   const bookshelf = mockDataRaw.bookshelfList
     .map((x) => bookById.get(x.id))
@@ -321,7 +323,7 @@ const buildMockData = () => {
 
   const allIds = books.map((b) => b.id)
   const categories = mockDataRaw.catelogList.map((c) => {
-    const desiredCount = randInt(15, 100)
+    const desiredCount = randInt(40, 100)
     const picked = shuffle(allIds)
       .slice(0, Math.min(allIds.length, desiredCount))
       .map((id) => bookById.get(id))
@@ -441,17 +443,34 @@ const resolveByPath = (path) => {
   if (parts[0] === 'user') {
     if (parts.length === 1) return mockData.user
     if (parts[1] === 'recent') return (mockData.history ?? []).slice(0, 4)
-    if (parts[1] === 'favorites') return (mockData.books ?? []).slice(0, 15) // 模拟 15 本收藏
+    if (parts[1] === 'favorites') {
+      // 模拟 40 本收藏，通过重复现有书籍
+      const favs = []
+      while (favs.length < 40 && mockData.books.length > 0) {
+        favs.push({ ...pickOne(mockData.books), id: nextVirtualBookId++ })
+      }
+      return favs
+    }
     return null
   }
   if (parts[0] === 'search') {
     const q = String(query.q ?? '').trim().toLowerCase()
     if (!q) return []
-    return mockData.books.filter((b) => {
+    const baseResults = mockData.books.filter((b) => {
       const title = String(b.title ?? '').toLowerCase()
       const authorName = String(b.authorName ?? '').toLowerCase()
       return title.includes(q) || authorName.includes(q)
     })
+    
+    // 如果有结果，通过重复模拟更多搜索结果以演示懒加载
+    if (baseResults.length > 0) {
+      const expanded = [...baseResults]
+      while (expanded.length < 40) {
+        expanded.push({ ...pickOne(baseResults), id: nextVirtualBookId++ })
+      }
+      return expanded
+    }
+    return baseResults
   }
 
   if (parts[0] === 'comments') {

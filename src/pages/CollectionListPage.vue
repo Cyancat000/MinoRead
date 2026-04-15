@@ -31,7 +31,7 @@ const kind = computed(() => String(route.meta.kind ?? '').trim())
 const id = computed(() => String(route.params.id ?? '').trim())
 
 const mainEl = ref<HTMLElement | null>(null)
-const pageSize = 12
+const pageSize = 18
 const visibleCount = ref(pageSize)
 const loadingMore = ref(false)
 

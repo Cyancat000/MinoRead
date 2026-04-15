@@ -25,7 +25,7 @@ const q = computed(() => String(route.query.q ?? '').trim())
 const from = computed(() => String(route.query.from ?? '').trim())
 
 const mainEl = ref<HTMLElement | null>(null)
-const pageSize = 12
+const pageSize = 18
 const visibleCount = ref(pageSize)
 const loadingMore = ref(false)
 const total = computed(() => list.value.length)

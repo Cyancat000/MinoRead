@@ -38,7 +38,7 @@ const filters = [
 ]
 
 const mainEl = ref<HTMLElement | null>(null)
-const pageSize = 12
+const pageSize = 18
 const visibleCount = ref(pageSize)
 const loadingMore = ref(false)
 
