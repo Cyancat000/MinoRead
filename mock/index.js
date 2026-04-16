@@ -318,7 +318,7 @@ const buildMockData = () => {
     progress: pickOne([0, 10, 30, 60, 100]),
     hasUpdate: idx % 3 === 0, // 每3本模拟一个有更新
     lastUpdateChapter: idx % 3 === 0 ? `第${randInt(31, 50)}章 ${pickOne(chapterTitlePool)}` : null,
-    lastUpdateTime: idx % 3 === 0 ? '10分钟前' : '昨天'
+    lastUpdateTime: pickOne(['5分钟前', '1小时前', '3小时前', '昨天', '2天前', '3天前', '上周'])
   }))
 
   const allIds = books.map((b) => b.id)
@@ -371,7 +371,6 @@ const buildMockData = () => {
   }
 
   mockData.books = books
-  mockData.bookshelf = bookshelf
   mockData.history = historyExpanded
   mockData.categories = categories
   mockData.rankings = rankings
